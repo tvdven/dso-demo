@@ -38,16 +38,6 @@ pipeline {
             }
           }
         }
-	stage('Docker BnP') {
-          steps {
-            container('kaniko') {
-              sh '/kaniko/executor --force -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=docker.io/tvdven/dsodemo'
-	    } 
-	  }
-        }
-      }
-    }
-
     stage('Deploy to Dev') {
       steps {
         // TODO

@@ -78,14 +78,32 @@ pipeline {
             }
           }
         }
-	stage('Docker BnP') {
-          steps {
-            container('kaniko') {
-              sh '/kaniko/executor --force -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=docker.io/tvdven/dso-demo-azure'
-	    } 
-	  }
+        stage('Docker BnP') {
+                steps {
+                  container('kaniko') {
+                    sh '/kaniko/executor --force -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=docker.io/tvdven/dso-demo-azure'
+            } 
+          }
         }
       }
+    }
+    stage('Image Analysis') {
+      parallel {
+        stage('Image Linting') {
+          steps {
+            container('docker-tools') {
+              sh 'dockle docker.io/tvdven/dso-demo-azure:v1'
+            }
+          } 
+        }
+        stage('Image Scan') {
+          steps {
+            container('docker-tools') {
+              sh 'trivy image --exit-code 1 tvdven/dso-demo-azure:v1'
+            }
+          } 
+        }
+      } 
     }
     stage('Deploy to Dev') {
       steps {

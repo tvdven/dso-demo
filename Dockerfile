@@ -5,7 +5,7 @@ COPY .  .
 RUN mvn package -DskipTests
 
 # stage 1 - package app to run
-FROM eclipse-temurin::11-alpine as RUN
+FROM eclipse-temurin:11-alpine as RUN
 WORKDIR /run
 COPY --from=BUILD /app/target/demo-0.0.1-SNAPSHOT.jar demo.ja
 EXPOSE 8080

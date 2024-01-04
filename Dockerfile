@@ -13,6 +13,11 @@ COPY --from=BUILD /app/target/demo-0.0.1-SNAPSHOT.jar demo.jar
 ARG USER=devops
 ENV HOME /home/$USER
 RUN  adduser -D $USER && chown $USER:$USER /run/demo.jar
+
+RUN apk add curl
+HEALTHCHECK --interval=30s --timeout=10s --retries=2 \
+    --start-period=20s CMD curl -f http://localhost:8080/ || exit 1
+
 USER $USER
 
 EXPOSE 8080

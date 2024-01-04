@@ -8,5 +8,12 @@ RUN mvn package -DskipTests
 FROM eclipse-temurin:11-alpine as RUN
 WORKDIR /run
 COPY --from=BUILD /app/target/demo-0.0.1-SNAPSHOT.jar demo.ja
+
+# it's important to switch the user at the end of Dockerfile otherwise package cannot be installed 
+ARG USER=devops
+ENV HOME /home/$USER
+RUN  adduser -D $USER && chown $USER:$USER /run/demo.jar
+USER $USER
+
 EXPOSE 8080
 CMD java  -jar /run/demo.jar

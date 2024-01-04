@@ -1,5 +1,5 @@
 # stage 0 - build artifact from source
-FROM maven:3.9.6-eclipse-temurin-11-alpine
+FROM maven:3.9.6-eclipse-temurin-11-alpine as BUILD
 WORKDIR /app
 COPY .  .
 RUN mvn package -DskipTests

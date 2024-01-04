@@ -92,14 +92,14 @@ pipeline {
         stage('Image Linting') {
           steps {
             container('docker-tools') {
-              sh 'dockle docker.io/tvdven/dso-demo-azure:v1'
+              sh 'dockle docker.io/tvdven/dso-demo-azure'
             }
           } 
         }
         stage('Image Scan') {
           steps {
             container('docker-tools') {
-              sh 'trivy image --exit-code 1 tvdven/dso-demo-azure:v1'
+              sh 'trivy image --exit-code 1 tvdven/dso-demo-azure'
             }
           } 
         }

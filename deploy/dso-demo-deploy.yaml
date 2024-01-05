@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: dso-demo-azure
+  name: dso-demo-azure
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dso-demo-azure
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: dso-demo-azure
+    spec:
+      containers:
+      - image: tvdven/dso-demo-azure
+        name: dso-demo-azure
+        ports:
+        - containerPort: 8080
+        resources: {}
+status: {}

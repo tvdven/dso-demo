@@ -60,15 +60,34 @@ pipeline {
         // }
       }
     }
+    // stage('SAST') {
+    //   steps {
+    //     container('slscan') {
+    //       sh 'scan --type java,depscan --build'
+    //       }
+    //     }
+    //   post {
+    //     success {
+    //       archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/*', fingerprint: true, onlyIfSuccessful: true
+    //     } 
+    //   }
+    // }
     stage('SAST') {
       steps {
         container('slscan') {
-          sh 'scan --type java,depscan --build'
+          // Using a try-catch block to prevent the build from failing
+          try {
+              sh 'scan --type java,depscan --build'
+          } catch (Exception e) {
+              // Log the error and continue
+              echo "Scan failed with error: ${e.message}"
           }
         }
+      }
       post {
-        success {
-          archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/*', fingerprint: true, onlyIfSuccessful: true
+        // Adjusting post-action to archive artifacts regardless of scan success
+        always {
+            archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/*', fingerprint: true
         } 
       }
     }

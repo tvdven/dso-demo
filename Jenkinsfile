@@ -80,14 +80,14 @@ pipeline {
             def status = sh script: 'scan --type java,depscan --build', returnStatus: true
             // Check if scan was successful or had vulnerabilities
             if (status != 0) {
-              echo "Scan detected issues or failed, but proceeding to next stage."
+              echo "Scan detected issues or failed, but proceeding to next stage. Check the `scan` report for issues"
             }
           }
         }
       }
       post {
         success {
-          archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/*', fingerprint: true, onlyIfSuccessful: true
+          archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/*', fingerprint: true
         } 
       }
     }
@@ -118,12 +118,33 @@ pipeline {
             }
           } 
         }
+        // stage('Image Scan') {
+        //   steps {
+        //     container('docker-tools') {
+        //       sh 'trivy image --exit-code 1 tvdven/dso-demo-azure'
+        //     }
+        //   } 
+        // }
         stage('Image Scan') {
           steps {
             container('docker-tools') {
-              sh 'trivy image --exit-code 1 tvdven/dso-demo-azure'
+              script {
+                // Run Trivy scan and save output to a file
+                sh 'trivy image --exit-code 1 tvdven/dso-demo-azure > trivy-scan-report.txt'
+                // Optionally, capture the exit status if you want to proceed even on failure
+                def status = sh script: 'cat trivy-scan-report.txt', returnStatus: true
+                if (status != 0) {
+                  echo "Scan completed with issues. Check trivy-scan-report.txt for details."
+                }
+              }
             }
-          } 
+          }
+          post {
+            always {
+              // Archive the Trivy scan report
+              archiveArtifacts artifacts: 'reports/trivy-scan-report.txt', allowEmptyArchive: true
+            }
+          }
         }
       } 
     }

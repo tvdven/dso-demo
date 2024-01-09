@@ -75,19 +75,19 @@ pipeline {
     stage('SAST') {
       steps {
         container('slscan') {
-          // Using a try-catch block to prevent the build from failing
-          try {
-              sh 'scan --type java,depscan --build'
-          } catch (Exception e) {
-              // Log the error and continue
-              echo "Scan failed with error: ${e.message}"
+          // Run the scan and capture the exit code
+          script {
+            def status = sh script: 'scan --type java,depscan --build', returnStatus: true
+            // Check if scan was successful or had vulnerabilities
+            if (status != 0) {
+              echo "Scan detected issues or failed, but proceeding to next stage."
+            }
           }
         }
       }
       post {
-        // Adjusting post-action to archive artifacts regardless of scan success
-        always {
-            archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/*', fingerprint: true
+        success {
+          archiveArtifacts allowEmptyArchive: true, artifacts: 'reports/*', fingerprint: true, onlyIfSuccessful: true
         } 
       }
     }

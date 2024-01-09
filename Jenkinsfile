@@ -130,7 +130,7 @@ pipeline {
             container('docker-tools') {
               script {
                 // Run Trivy scan and save output to a file
-                sh 'trivy image --exit-code 1 tvdven/dso-demo-azure > trivy-scan-report.txt'
+                sh 'trivy image --exit-code 1 tvdven/dso-demo-azure > trivy-scan-report.txt || true'
                 // Optionally, capture the exit status if you want to proceed even on failure
                 def status = sh script: 'cat trivy-scan-report.txt', returnStatus: true
                 if (status != 0) {

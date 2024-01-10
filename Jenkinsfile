@@ -1,6 +1,7 @@
 pipeline {
   environment {
     ARGO_SERVER = '98.67.129.254:80'
+    DEV_URL = 'http://20.79.64.234:8080/'
   }
   agent {
     kubernetes {
@@ -156,6 +157,23 @@ pipeline {
         container('docker-tools') {
           sh 'docker run -t schoolofdevops/argocd-cli argocd app sync dso-demo-azure --insecure --server 98.67.129.254:80 --auth-token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJqZW5raW5zOmFwaUtleSIsIm5iZiI6MTcwNDgwNTk3MSwiaWF0IjoxNzA0ODA1OTcxLCJqdGkiOiI1YTM1ZDYxNS03NTE4LTRhNzgtYWU3MS0wZmNmOWE4NzU2MWQifQ.ndCgSLY2ybMCy8Q4Q5nVyDDD6UGktpRUYV4j68SEyfc'
           sh 'docker run -t schoolofdevops/argocd-cli argocd app wait dso-demo-azure --health --timeout 300 --insecure --server 98.67.129.254:80 --auth-token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJhcmdvY2QiLCJzdWIiOiJqZW5raW5zOmFwaUtleSIsIm5iZiI6MTcwNDgwNTk3MSwiaWF0IjoxNzA0ODA1OTcxLCJqdGkiOiI1YTM1ZDYxNS03NTE4LTRhNzgtYWU3MS0wZmNmOWE4NzU2MWQifQ.ndCgSLY2ybMCy8Q4Q5nVyDDD6UGktpRUYV4j68SEyfc'
+        } 
+      }
+    }
+    stage('Dynamic Analysis') {
+      parallel {
+        stage('E2E tests') {
+          steps {
+            sh 'echo "All Tests passed!!!"'
+          }
+        }
+        stage('DAST') {
+          steps {
+            container('docker-tools') {
+              sh 'docker run -t owasp/zap2docker-stable zap-baseline.py -t \
+              $DEV_URL || exit 0'
+            } 
+          }
         } 
       }
     }

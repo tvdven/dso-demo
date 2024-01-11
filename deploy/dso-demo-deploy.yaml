@@ -21,6 +21,6 @@ spec:
       - image: tvdven/dso-demo-azure
         name: dso-demo-azure
         ports:
-        - containerPort: 8080
+        - containerPort: 80
         resources: {}
 status: {}

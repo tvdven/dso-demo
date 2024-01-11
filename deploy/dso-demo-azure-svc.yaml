@@ -7,10 +7,10 @@ metadata:
   name: dso-demo-azure
 spec:
   ports:
-  - name: "8080"
-    port: 8080
+  - name: "80"
+    port: 80
     protocol: TCP
-    targetPort: 8080
+    targetPort: 80
   selector:
     app: dso-demo-azure
   type: LoadBalancer
